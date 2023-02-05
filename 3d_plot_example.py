@@ -14,14 +14,18 @@ import numpy as np
 ax = plt.figure().add_subplot(projection='3d')
 
 ## plane def from general form 
-def plane(x, y):
-    return (10*x + 8*y - 155)/(-3)
+## enter values without solving for z, e.g.
+## 10x + 8y + 3z -155 = 0 -> a=10, b=8, c=3, d=-155
+def plane_general_form(x, y, a, b, c, d):
+    return (a*x + b*y + d)/(-c)
 
-## data
+## data grids
 x = np.linspace(-6, 6, 100)
 y = np.linspace(-6, 6, 100)
 X, Y = np.meshgrid(x, y)
-Z = plane(X, Y)
+
+## data from plane general form
+Z = plane_general_form(X, Y, 10, 8, 3, -155)
 
 ## plot origin
 ax.scatter(0, 0, 0, c='red', marker='.', s=100)
