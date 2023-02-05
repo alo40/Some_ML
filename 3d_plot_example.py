@@ -5,25 +5,36 @@ Created on Sun Feb  5 11:20:17 2023
 @author: fori
 """
 
-
+# libraries
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
+import numpy as np
 
+# figure config
 ax = plt.figure().add_subplot(projection='3d')
-X, Y, Z = axes3d.get_test_data(0.05)
 
-# Plot the 3D surface
-ax.plot_surface(X, Y, Z, edgecolor='royalblue', lw=0.5, rstride=8, cstride=8,
-                alpha=0.3)
+# plane def from general form 
+def plane(x, y):
+    return (10*x + 8*y - 155)/(-3)
 
-# Plot projections of the contours for each dimension.  By choosing offsets
-# that match the appropriate axes limits, the projected contours will sit on
-# the 'walls' of the graph.
-ax.contour(X, Y, Z, zdir='z', offset=-100, cmap='coolwarm')
-ax.contour(X, Y, Z, zdir='x', offset=-40, cmap='coolwarm')
-ax.contour(X, Y, Z, zdir='y', offset=40, cmap='coolwarm')
+# data
+x = np.linspace(-6, 6, 100)
+y = np.linspace(-6, 6, 100)
+X, Y = np.meshgrid(x, y)
+Z = plane(X, Y)
 
-ax.set(xlim=(-40, 40), ylim=(-40, 40), zlim=(-100, 100),
-       xlabel='X', ylabel='Y', zlabel='Z')
+# plot 
+ax.plot_surface(X, Y, Z, 
+                edgecolor='royalblue', 
+                lw=0.5, 
+                rstride=8, 
+                cstride=8,
+                alpha=0.2)
 
+## plot config
+ax.set(xlabel='X', ylabel='Y', zlabel='Z')
+# ax.set(xlim=(-2, 2), ylim=(-2, 2), zlim=(-2, 2))
+ax.set_yticklabels([])
+ax.set_xticklabels([])
+ax.set_zticklabels([])
 plt.show()
