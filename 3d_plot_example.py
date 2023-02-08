@@ -96,10 +96,10 @@ y_2 = 1
 z_2 = 5
 P_2 = np.array([x_2, y_2, z_2])
 
-# ## plot vectors from origin
-# ax.plot([x_0, 0], [y_0, 0], [z_0, 0], c='red', marker='.')
-# ax.plot([x_1, 0], [y_1, 0], [z_1, 0], c='green', marker='.')
-# ax.plot([x_2, 0], [y_2, 0], [z_2, 0], c='green', marker='.')
+## plot vectors from origin
+ax.plot([x_0, 0], [y_0, 0], [z_0, 0], c='red', marker='.') # offset vector
+ax.plot([x_1, 0], [y_1, 0], [z_1, 0], c='green', marker='.')
+ax.plot([x_2, 0], [y_2, 0], [z_2, 0], c='green', marker='.')
 
 ## plot substraction vectors
 v1 = P_1-P_0
@@ -116,20 +116,21 @@ ax.plot([v2[0]+P_0[0], 0+P_0[0]],
 # n_0 = np.cross(P_1, P_2)
 # ax.plot([n_0[0], 0], [n_0[1], 0], [n_0[2], 0], c='purple', marker='.')
 
-## normal vector from origin using general form coeff
-ax.plot([a, 0], 
-        [b, 0], 
-        [c, 0], c='purple', marker='.')
+# ## normal vector from origin using general form coeff
+# ax.plot([a, 0], 
+#         [b, 0], 
+#         [c, 0], c='purple', marker='.')
 
 ## normal vector from plane using dot product
-n_p = np.cross(v1, v2)
-ax.plot([n_p[0]+P_0[0], 0+P_0[0]], 
-        [n_p[1]+P_0[1], 0+P_0[1]], 
-        [n_p[2]+P_0[2], 0+P_0[2]], c='purple', marker='.')
+n = np.cross(v1, v2)
+nu = n/np.linalg.norm(n) # normalized
+ax.plot([nu[0]+P_0[0], 0+P_0[0]], 
+        [nu[1]+P_0[1], 0+P_0[1]], 
+        [nu[2]+P_0[2], 0+P_0[2]], c='purple', marker='.')
 
-## plane
-Z = plane_general_form(X, Y, a, b, c, d)
-ax.plot_surface(X, Y, Z, edgecolor='royalblue', lw=0.5, alpha=0.1, rstride=8, cstride=8)
+# ## plane
+# Z = plane_general_form(X, Y, a, b, c, d)
+# ax.plot_surface(X, Y, Z, edgecolor='royalblue', lw=0.5, alpha=0.1, rstride=8, cstride=8)
 
 ## ------------------------------------------------------------
 ## plotting
@@ -183,7 +184,7 @@ ax.scatter(0, 0, 0, c='red', marker='.', s=100)
 ## ------------------------------------------------------------
 ## plot config
 ax.set(xlabel='X', ylabel='Y', zlabel='Z')
-# ax.set(xlim=(-4, 4), ylim=(-4, 4), zlim=(-4, 4))
+ax.set(xlim=(-4, 4), ylim=(-4, 4), zlim=(-4, 4))
 # ax.set_yticklabels([])
 # ax.set_xticklabels([])
 # ax.set_zticklabels([])
