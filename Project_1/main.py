@@ -2,13 +2,47 @@ import project1 as p1
 import utils
 import numpy as np
 
-# 2. Hinge Loss
+#-------------------------------------------------------------------------------
+# 2. Hinge Loss on One Data Sample
+#-------------------------------------------------------------------------------
 
-feature_vector = np.array([1., 1.])
-label = 1.
-theta = np.array([-1., -1.])
-theta_0 = 0.
-hinge_loss = p1.hinge_loss_single(feature_vector, label, theta, theta_0)
+# feature_vector = np.array([1., 1.])
+# label = 1.
+# theta = np.array([-1., -1.])
+# theta_0 = 0.
+# hinge_loss = p1.hinge_loss_single(feature_vector, label, theta, theta_0)
+
+#-------------------------------------------------------------------------------
+# 2. The Complete Hinge Loss
+#-------------------------------------------------------------------------------
+
+# feature_matrix = np.array([[1., -1.], [-1., 1.]])
+# labels = np.array([1., -1.])
+# theta = np.array([[1., -1.], [-1., 1.]])
+# theta_0 = np.array([1., 1.])
+# hinge_loss = p1.hinge_loss_full(feature_matrix, labels, theta, theta_0)
+
+#-------------------------------------------------------------------------------
+# 3. Perceptron Single Step Update
+#-------------------------------------------------------------------------------
+
+# feature_vector = np.array([1., 1.])
+# label = 1.
+# theta = np.array([-1., -1.])
+# theta_0 = 0.
+
+feature_vector = np.array([0.22782035, -0.40478725,  0.43807799,  0.42014005,  0.00329309,  0.19814613,
+                           0.03042681, -0.36701387, -0.4368788,  -0.21080741])
+label = -1
+current_theta = np.array([0.03323687,  0.14710972, -0.49769777, -0.33920351, -0.02404346,  0.14141823,
+                  -0.09854503,  0.36992849, -0.38952173,  0.13559639])
+current_theta_0 = 0.1455625480557411
+
+theta, theta_0 = p1.perceptron_single_step_update(
+        feature_vector,
+        label,
+        current_theta,
+        current_theta_0)
 pass
 
 #-------------------------------------------------------------------------------
