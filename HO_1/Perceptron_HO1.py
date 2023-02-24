@@ -32,47 +32,37 @@ ax.grid(linestyle='--')
 ax.set_aspect('equal', 'box')
 
 # training points
-x1 = np.array([-1., 1, -1])  # x-coordinate
-x2 = np.array([-1, 0, 10])  # y-coordinate
-y = np.array([1., -1, 1])  # labels
+x1 = np.array([-4., -2, -1, 2, 1])  # x-coordinate
+x2 = np.array([2, 1, -1, 2, -2])  # y-coordinate
+y = np.array([1., 1., -1, -1, -1])  # labels
 
 # characteristic vector
-theta = np.array([0, 0])
-theta_0 = 0
+theta = np.array([-4., 2.])
+theta_0 = -5.
 
 # plot points
 for i in range(y.size):
     if y[i] > 0:
-        ax.scatter(x1[i], x2[i], c='b')
+        ax.scatter(x1[i], x2[i], c='b', s=4)
     else:
-        ax.scatter(x1[i], x2[i], c='r')
+        ax.scatter(x1[i], x2[i], c='r', s=4)
 
 # perceptron
 # loop_order = [0]
-loop_order = [1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]
+loop_order = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
+miss_class = 0  # number of miss-classification in a run
 for i in loop_order:
     point_i = np.array([x1[i], x2[i]])
-    if y[i]*np.dot(theta, point_i) <= 0:
+    if y[i]*(np.dot(theta, point_i) + theta_0) <= 0:
         theta = theta + y[i]*point_i
+        theta_0 = theta_0 + y[i]
+        miss_class = miss_class + 1
 
 # line normal to characteristic vector
 x1_classifier, x2_classifier = normal_line(theta[0], theta[1], theta_0, lim_x, lim_y)
-ax.plot(x1_classifier, x2_classifier, c='m')
+ax.plot(x1_classifier, x2_classifier, c='m', lw=0.4)
+plt.text(0, 1, 'miss classifications = {}'.format(miss_class), fontsize=8)
+plt.text(0, 0, 'theta = [{0},{1}], theta_0 = {2}'.format(theta[0], theta[1], theta_0), fontsize=8)
 
 # end code
 plt.show()
-
-# ------------------------------------------------------
-
-# import numpy as np
-# import matplotlib.pyplot as plt
-# import matplotlib.cm as cm
-#
-# x = np.arange(10)
-# ys = [i+x+(i*x)**2 for i in range(10)]
-#
-# colors = cm.rainbow(np.linspace(0, 1, len(ys)))
-# for y, c in zip(ys, colors):
-#     plt.scatter(x, y, color=c)
-#
-# plt.show()
