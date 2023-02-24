@@ -38,8 +38,12 @@ def hinge_loss_single(feature_vector, label, theta, theta_0):
         the hinge loss, as a float, associated with the given data point and
         parameters.
     """
-    # Your code here
-    raise NotImplementedError
+    Z = label * (np.dot(feature_vector, theta) + theta_0)
+    if Z >= 1:
+        loss = 0
+    else:
+        loss = 1 - Z
+    return loss
 
 
 
