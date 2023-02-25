@@ -132,14 +132,17 @@ def perceptron(feature_matrix, labels, T):
         the offset parameter `theta_0` as a floating point number
             (found also after T iterations through the feature matrix).
     """
-    # Your code here
-    raise NotImplementedError
+    theta = np.zeros(feature_matrix.shape[1])
+    theta_0 = 0.
+    nsamples = feature_matrix.shape[0]
     for t in range(T):
         for i in get_order(nsamples):
-            # Your code here
-            raise NotImplementedError
-    # Your code here
-    raise NotImplementedError
+            theta, theta_0 = perceptron_single_step_update(
+                feature_matrix[i],
+                labels[i],
+                theta,
+                theta_0)
+    return theta, theta_0
 
 
 

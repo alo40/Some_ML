@@ -1,6 +1,8 @@
 import project1 as p1
 import utils
 import numpy as np
+import matplotlib.pyplot as plt
+# import random
 
 #-------------------------------------------------------------------------------
 # 2. Hinge Loss on One Data Sample
@@ -26,23 +28,82 @@ import numpy as np
 # 3. Perceptron Single Step Update
 #-------------------------------------------------------------------------------
 
-# feature_vector = np.array([1., 1.])
+# feature_vector = np.array([1., 2.])
 # label = 1.
-# theta = np.array([-1., -1.])
-# theta_0 = 0.
+# current_theta = np.array([-1., -1.])
+# current_theta_0 = 0.
 
-feature_vector = np.array([0.22782035, -0.40478725,  0.43807799,  0.42014005,  0.00329309,  0.19814613,
-                           0.03042681, -0.36701387, -0.4368788,  -0.21080741])
-label = -1
-current_theta = np.array([0.03323687,  0.14710972, -0.49769777, -0.33920351, -0.02404346,  0.14141823,
-                  -0.09854503,  0.36992849, -0.38952173,  0.13559639])
-current_theta_0 = 0.1455625480557411
+# feature_vector = np.array([0.22782035, -0.40478725,  0.43807799,  0.42014005,  0.00329309,  0.19814613,
+#                            0.03042681, -0.36701387, -0.4368788,  -0.21080741])
+# label = -1
+# current_theta = np.array([0.03323687,  0.14710972, -0.49769777, -0.33920351, -0.02404346,  0.14141823,
+#                   -0.09854503,  0.36992849, -0.38952173,  0.13559639])
+# current_theta_0 = 0.1455625480557411
 
-theta, theta_0 = p1.perceptron_single_step_update(
-        feature_vector,
-        label,
-        current_theta,
-        current_theta_0)
+# theta, theta_0 = p1.perceptron_single_step_update(
+#         feature_vector,
+#         label,
+#         current_theta,
+#         current_theta_0)
+
+#-------------------------------------------------------------------------------
+# 3. Perceptron Single Step Update
+#-------------------------------------------------------------------------------
+n = 200 # need to be an even number
+sigma = 0.75
+
+# feature_matrix = np.random.rand(n,2)
+feature_matrix_pos_x = np.random.normal(+0.75, sigma, size=int(n/2))
+feature_matrix_neg_x = np.random.normal(+0.25, sigma, size=int(n/2))
+feature_matrix_x = np.concatenate((feature_matrix_pos_x, feature_matrix_neg_x))
+
+feature_matrix_pos_y = np.random.normal(+0.75, sigma, size=int(n/2))
+feature_matrix_neg_y = np.random.normal(+0.25, sigma, size=int(n/2))
+feature_matrix_y = np.concatenate((feature_matrix_pos_y, feature_matrix_neg_y))
+
+feature_matrix = np.concatenate((
+    feature_matrix_x.reshape(-1,1),
+    feature_matrix_y.reshape(-1,1)),
+    axis=1)  # column-wise concatenation
+
+#labels
+labels_pos = np.sign(np.random.normal(+0.5, 0.1, size=int(n/2)))  # skewed to negative
+labels_neg = np.sign(np.random.normal(-0.5, 0.1, size=int(n/2)))  # skewed to positive
+labels = np.concatenate((labels_pos , labels_neg))
+
+# feature_matrix = np.array(
+#     [[1., 1.],
+#      [2., 2.]])
+# labels = np.array([1., -1.])
+# theta = np.array([[1., -1.], [-1., 1.]])
+# theta_0 = np.array([1., 1.])
+
+T = 1000
+theta, theta_0 = p1.perceptron(feature_matrix, labels, T)
+
+# figure (only for 2 Parameters!)
+fig, ax = plt.subplots()
+
+# 2D points
+for i in range(labels.size):
+    if labels[i] > 0:
+        ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='b', s=4)
+    else:
+        ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='r', s=4)
+
+# # linear 2D classifier
+x = np.linspace(-4, 4, 100)
+y = (-theta[0]*x - theta_0)/theta[1]
+ax.plot(x, y, c='m', lw=0.4)
+
+# config and plot figure
+lim_x = 2
+lim_y = 2
+ax.set(xlabel='x_1', ylabel='x_2')
+ax.set(xlim=(-lim_x, lim_x), ylim=(-lim_y, lim_y))
+ax.grid(linestyle='--')
+ax.set_aspect('equal', 'box')
+plt.show()
 pass
 
 #-------------------------------------------------------------------------------
