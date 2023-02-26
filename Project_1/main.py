@@ -2,6 +2,7 @@ import project1 as p1
 import utils
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 # import random
 
 #-------------------------------------------------------------------------------
@@ -78,8 +79,8 @@ labels = np.concatenate((labels_pos , labels_neg))
 # theta = np.array([[1., -1.], [-1., 1.]])
 # theta_0 = np.array([1., 1.])
 
-T = 1000
-theta, theta_0 = p1.perceptron(feature_matrix, labels, T)
+# T = 1000
+# theta, theta_0 = p1.perceptron(feature_matrix, labels, T)
 
 # figure (only for 2 Parameters!)
 fig, ax = plt.subplots()
@@ -92,9 +93,9 @@ for i in range(labels.size):
         ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='r', s=4)
 
 # # linear 2D classifier
-x = np.linspace(-4, 4, 100)
-y = (-theta[0]*x - theta_0)/theta[1]
-ax.plot(x, y, c='m', lw=0.4)
+# x = np.linspace(-4, 4, 100)
+# y = (-theta[0]*x - theta_0)/theta[1]
+# ax.plot(x, y, c='m', lw=0.4)
 
 # config and plot figure
 lim_x = 2
@@ -103,6 +104,75 @@ ax.set(xlabel='x_1', ylabel='x_2')
 ax.set(xlim=(-lim_x, lim_x), ylim=(-lim_y, lim_y))
 ax.grid(linestyle='--')
 ax.set_aspect('equal', 'box')
+
+# animation
+# create a line plot
+x = np.linspace(-4, 4, 100)
+y = np.zeros(x.shape)
+line, = ax.plot(x, y)
+point = ax.scatter(0, 0)
+
+# Create a text object for the legend
+legend_text = ax.text(0.05, 0.85, "", transform=ax.transAxes)
+# legend_text = fig.text(0.05, 0.9, "", transform=fig.transFigure)  # outside the plotting box
+
+# initialize characteristic vector
+global_theta = np.zeros(feature_matrix.shape[1])
+global_theta_0 = 0.
+global_random = np.random.permutation(200)
+
+
+# define the update function
+def update(frame, point, line, feature_matrix, labels):
+
+    # declare global parameters
+    global global_theta
+    global global_theta_0
+    global global_random
+
+    # init values
+    legend_text.set_text("frame: {:d}\ntheta: [{:.2f}, {:.2f}]\ntheta_0: {:.2f}"
+                         .format(frame, global_theta[0], global_theta[1], global_theta_0))
+
+    # workaround for several T iterations
+    if frame < 200:
+        i = frame
+    elif frame >= 200 and frame < 400:
+        i = frame - 200
+    elif frame >= 400 and frame < 600:
+        i = frame - 400
+
+    # Check if the current frame number exceeds the stopping point
+    if frame >= 199:
+        # Stop the animation
+        ani.event_source.stop()
+
+    # update the y-data of the line plot
+    # theta, theta_0 = p1.perceptron(feature_matrix, labels, 1)
+    theta, theta_0 = p1.perceptron_single_step_update(feature_matrix[global_random[i]],
+                                                      labels[global_random[i]],
+                                                      global_theta,
+                                                      global_theta_0)
+
+    # update global parameters
+    global_theta = theta
+    global_theta_0 = theta_0
+
+    point.set_offsets(feature_matrix[i])
+    line.set_ydata((-theta[0]*x - theta_0)/theta[1])
+    # legend_text.set_text("frame: {:d}\ntheta: [{:.2f}, {:.2f}]\ntheta_0: {:.2f}"
+    #                      .format(frame, theta[0], theta[1], theta_0))
+    return point, line, legend_text
+
+
+# create the animation
+ani = FuncAnimation(fig, update,
+                    fargs=(point, line, feature_matrix, labels),
+                    frames=n, blit=True, interval=50)
+
+ani.save('animation.gif', writer='pillow')
+
+fig.subplots_adjust(top=0.85)
 plt.show()
 pass
 
