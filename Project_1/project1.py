@@ -3,11 +3,9 @@ import numpy as np
 import random
 
 
-
-#==============================================================================
-#===  PART I  =================================================================
-#==============================================================================
-
+# ==============================================================================
+# ===  PART I  =================================================================
+# ==============================================================================
 
 
 def get_order(n_samples):
@@ -20,7 +18,6 @@ def get_order(n_samples):
         indices = list(range(n_samples))
         random.shuffle(indices)
         return indices
-
 
 
 def hinge_loss_single(feature_vector, label, theta, theta_0):
@@ -44,7 +41,6 @@ def hinge_loss_single(feature_vector, label, theta, theta_0):
     else:
         loss = 1 - Z
     return loss
-
 
 
 def hinge_loss_full(feature_matrix, labels, theta, theta_0):
@@ -77,7 +73,6 @@ def hinge_loss_full(feature_matrix, labels, theta, theta_0):
     #
 
 
-
 def perceptron_single_step_update(
         feature_vector,
         label,
@@ -99,15 +94,13 @@ def perceptron_single_step_update(
         the updated feature-coefficient parameter `theta` as a numpy array
         the updated offset parameter `theta_0` as a floating point number
     """
-
-    if label*(np.dot(current_theta, feature_vector) + current_theta_0) <= 0:
-        theta = current_theta + label*feature_vector
+    if label * (np.dot(current_theta, feature_vector) + current_theta_0) <= 0:
+        theta = current_theta + label * feature_vector
         theta_0 = current_theta_0 + label
     else:
         theta = current_theta
         theta_0 = current_theta_0
     return theta, theta_0
-
 
 
 def perceptron(feature_matrix, labels, T):
@@ -145,7 +138,6 @@ def perceptron(feature_matrix, labels, T):
     return theta, theta_0
 
 
-
 def average_perceptron(feature_matrix, labels, T):
     """
     Runs the average perceptron algorithm on a given dataset.  Runs `T`
@@ -172,8 +164,27 @@ def average_perceptron(feature_matrix, labels, T):
         the average offset parameter `theta_0` as a floating point number
             (averaged also over T iterations through the feature matrix).
     """
-    # Your code here
-    raise NotImplementedError
+    sum_theta = np.zeros(feature_matrix.shape[1])
+    sum_theta_0 = 0.
+
+    theta = np.zeros(feature_matrix.shape[1])
+    theta_0 = 0.
+    nsamples = feature_matrix.shape[0]
+    indices = get_order(feature_matrix.shape[0])
+
+    for t in range(T):
+        for i in indices:
+            theta, theta_0 = perceptron_single_step_update(
+                feature_matrix[i],
+                labels[i],
+                theta,
+                theta_0)
+            sum_theta = sum_theta + theta
+            sum_theta_0 = sum_theta_0 + theta_0
+
+    theta = sum_theta/(T*nsamples)
+    theta_0 = sum_theta_0/(T*nsamples)
+    return theta, theta_0
 
 
 def pegasos_single_step_update(
@@ -203,9 +214,13 @@ def pegasos_single_step_update(
         real valued number with the value of theta_0 after the old updated has
         completed.
     """
-    # Your code here
-    raise NotImplementedError
-
+    if label * (np.dot(theta, feature_vector) + theta_0) <= 1:
+        theta = (1-eta*L)*theta + eta*label*feature_vector
+        theta_0 = theta_0 + eta*label
+    else:
+        theta = (1-eta*L)*theta
+        theta_0 = theta_0
+    return theta, theta_0
 
 
 def pegasos(feature_matrix, labels, T, L):
@@ -235,15 +250,29 @@ def pegasos(feature_matrix, labels, T, L):
         the value of the theta_0, the offset classification parameter, found
         after T iterations through the feature matrix.
     """
-    # Your code here
-    raise NotImplementedError
+    theta = np.zeros(feature_matrix.shape[1])
+    theta_0 = 0.
+    eta = 0.
+    indices = get_order(feature_matrix.shape[0])
 
+    counter = 1
+    for t in range(T):
+        for i in indices:
+            eta = 1/np.sqrt(counter)
+            theta, theta_0 = pegasos_single_step_update(
+                feature_matrix[i],
+                labels[i],
+                L,
+                eta,
+                theta,
+                theta_0)
+            counter = counter + 1
 
+    return theta, theta_0
 
-#==============================================================================
-#===  PART II  ================================================================
-#==============================================================================
-
+# ==============================================================================
+# ===  PART II  ================================================================
+# ==============================================================================
 
 
 ##  #pragma: coderesponse answer
@@ -252,7 +281,6 @@ def pegasos(feature_matrix, labels, T, L):
 ##  def classify_vector(feature_vector, theta, theta_0):
 ##      return 2*np.heaviside(decision_function(feature_vector, theta, theta_0), 0)-1
 ##  #pragma: coderesponse end
-
 
 
 def classify(feature_matrix, theta, theta_0):
@@ -313,7 +341,6 @@ def classifier_accuracy(
     raise NotImplementedError
 
 
-
 def extract_words(text):
     """
     Helper function for `bag_of_words(...)`.
@@ -326,7 +353,6 @@ def extract_words(text):
     for c in punctuation + digits:
         text = text.replace(c, ' ' + c + ' ')
     return text.lower().split()
-
 
 
 def bag_of_words(texts, remove_stopword=False):
@@ -354,7 +380,6 @@ def bag_of_words(texts, remove_stopword=False):
     return indices_by_word
 
 
-
 def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
     """
     Args:
@@ -378,7 +403,6 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
         # Your code here
         raise NotImplementedErrort
     return feature_matrix
-
 
 
 def accuracy(preds, targets):

@@ -3,7 +3,7 @@ import utils
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-# import random
+import random
 
 #-------------------------------------------------------------------------------
 # 2. Hinge Loss on One Data Sample
@@ -48,29 +48,34 @@ from matplotlib.animation import FuncAnimation
 #         current_theta_0)
 
 #-------------------------------------------------------------------------------
-# 3. Perceptron Single Step Update
+# random data
 #-------------------------------------------------------------------------------
-n = 200 # need to be an even number
+
+n = 200  # need to be an even number
 sigma = 0.75
 
 # feature_matrix = np.random.rand(n,2)
-feature_matrix_pos_x = np.random.normal(+0.75, sigma, size=int(n/2))
-feature_matrix_neg_x = np.random.normal(+0.25, sigma, size=int(n/2))
+feature_matrix_pos_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+feature_matrix_neg_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
 feature_matrix_x = np.concatenate((feature_matrix_pos_x, feature_matrix_neg_x))
 
-feature_matrix_pos_y = np.random.normal(+0.75, sigma, size=int(n/2))
-feature_matrix_neg_y = np.random.normal(+0.25, sigma, size=int(n/2))
+feature_matrix_pos_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+feature_matrix_neg_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
 feature_matrix_y = np.concatenate((feature_matrix_pos_y, feature_matrix_neg_y))
 
 feature_matrix = np.concatenate((
-    feature_matrix_x.reshape(-1,1),
-    feature_matrix_y.reshape(-1,1)),
+    feature_matrix_x.reshape(-1, 1),
+    feature_matrix_y.reshape(-1, 1)),
     axis=1)  # column-wise concatenation
 
 #labels
 labels_pos = np.sign(np.random.normal(+0.5, 0.1, size=int(n/2)))  # skewed to negative
 labels_neg = np.sign(np.random.normal(-0.5, 0.1, size=int(n/2)))  # skewed to positive
-labels = np.concatenate((labels_pos , labels_neg))
+labels = np.concatenate((labels_pos, labels_neg))
+
+#-------------------------------------------------------------------------------
+# 3. Full Perceptron Algorithm
+#-------------------------------------------------------------------------------
 
 # feature_matrix = np.array(
 #     [[1., 1.],
@@ -79,10 +84,54 @@ labels = np.concatenate((labels_pos , labels_neg))
 # theta = np.array([[1., -1.], [-1., 1.]])
 # theta_0 = np.array([1., 1.])
 
-# T = 1000
+# # number of cycles
+# T = 5
+
+# # full perceptron algorithm
 # theta, theta_0 = p1.perceptron(feature_matrix, labels, T)
 
-# figure (only for 2 Parameters!)
+# # Average Perceptron Algorithm
+# theta, theta_0 = p1.average_perceptron(feature_matrix, labels, T)
+
+#-------------------------------------------------------------------------------
+# 4. Pegasos Algorithm
+#-------------------------------------------------------------------------------
+
+# feature_vector = np.array([0.22782035, -0.40478725,  0.43807799,  0.42014005,  0.00329309,  0.19814613,
+#                            0.03042681, -0.36701387, -0.4368788,  -0.21080741])
+# label = -1
+
+# feature_matrix = np.array(
+#     [[1., 1.],
+#      [-1.5, -0.5]])
+# labels = np.array([1., -1.])
+# theta = np.array([[1., -1.], [-1., 1.]])
+# theta_0 = np.array([1., 1.])
+
+T = 100
+L = 1
+# eta = 1
+# current_theta = np.zeros(feature_matrix.shape)
+# current_theta_0 = 0.
+
+# # Pegasos single step update
+# for i in range(labels.shape[0]):
+#     theta, theta_0 = p1.pegasos_single_step_update(
+#         feature_matrix[i],
+#         labels[i],
+#         L,
+#         eta,
+#         current_theta[i],
+#         current_theta_0)
+
+# Pegasos full
+theta, theta_0 = p1.pegasos(feature_matrix, labels, T, L)
+
+#-------------------------------------------------------------------------------
+# plotting (only for 2 Parameters!)
+#-------------------------------------------------------------------------------
+
+# figure
 fig, ax = plt.subplots()
 
 # 2D points
@@ -92,10 +141,10 @@ for i in range(labels.size):
     else:
         ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='r', s=4)
 
-# # linear 2D classifier
-# x = np.linspace(-4, 4, 100)
-# y = (-theta[0]*x - theta_0)/theta[1]
-# ax.plot(x, y, c='m', lw=0.4)
+# linear 2D classifier
+x = np.linspace(-4, 4, 100)
+y = (-theta[0]*x - theta_0)/theta[1]
+ax.plot(x, y, c='m', lw=0.4)
 
 # config and plot figure
 lim_x = 2
@@ -104,77 +153,80 @@ ax.set(xlabel='x_1', ylabel='x_2')
 ax.set(xlim=(-lim_x, lim_x), ylim=(-lim_y, lim_y))
 ax.grid(linestyle='--')
 ax.set_aspect('equal', 'box')
-
-# animation
-# create a line plot
-x = np.linspace(-4, 4, 100)
-y = np.zeros(x.shape)
-line, = ax.plot(x, y)
-point = ax.scatter(0, 0)
-
-# Create a text object for the legend
-legend_text = ax.text(0.05, 0.85, "", transform=ax.transAxes)
-# legend_text = fig.text(0.05, 0.9, "", transform=fig.transFigure)  # outside the plotting box
-
-# initialize characteristic vector
-global_theta = np.zeros(feature_matrix.shape[1])
-global_theta_0 = 0.
-global_random = np.random.permutation(200)
-
-
-# define the update function
-def update(frame, point, line, feature_matrix, labels):
-
-    # declare global parameters
-    global global_theta
-    global global_theta_0
-    global global_random
-
-    # init values
-    legend_text.set_text("frame: {:d}\ntheta: [{:.2f}, {:.2f}]\ntheta_0: {:.2f}"
-                         .format(frame, global_theta[0], global_theta[1], global_theta_0))
-
-    # workaround for several T iterations
-    if frame < 200:
-        i = frame
-    elif frame >= 200 and frame < 400:
-        i = frame - 200
-    elif frame >= 400 and frame < 600:
-        i = frame - 400
-
-    # Check if the current frame number exceeds the stopping point
-    if frame >= 199:
-        # Stop the animation
-        ani.event_source.stop()
-
-    # update the y-data of the line plot
-    # theta, theta_0 = p1.perceptron(feature_matrix, labels, 1)
-    theta, theta_0 = p1.perceptron_single_step_update(feature_matrix[global_random[i]],
-                                                      labels[global_random[i]],
-                                                      global_theta,
-                                                      global_theta_0)
-
-    # update global parameters
-    global_theta = theta
-    global_theta_0 = theta_0
-
-    point.set_offsets(feature_matrix[i])
-    line.set_ydata((-theta[0]*x - theta_0)/theta[1])
-    # legend_text.set_text("frame: {:d}\ntheta: [{:.2f}, {:.2f}]\ntheta_0: {:.2f}"
-    #                      .format(frame, theta[0], theta[1], theta_0))
-    return point, line, legend_text
-
-
-# create the animation
-ani = FuncAnimation(fig, update,
-                    fargs=(point, line, feature_matrix, labels),
-                    frames=n, blit=True, interval=50)
-
-ani.save('animation.gif', writer='pillow')
-
-fig.subplots_adjust(top=0.85)
 plt.show()
-pass
+
+#-------------------------------------------------------------------------------
+# animation (optional)
+#-------------------------------------------------------------------------------
+#
+# # create a line plot
+# x = np.linspace(-4, 4, 100)
+# y = np.zeros(x.shape)
+# line, = ax.plot(x, y)
+# point = ax.scatter(0, 0)
+#
+# # Create a text object for the legend
+# legend_text = ax.text(0.05, 0.85, "", transform=ax.transAxes)
+# # legend_text = fig.text(0.05, 0.9, "", transform=fig.transFigure)  # outside the plotting box
+#
+# # initialize characteristic vector
+# global_theta = np.zeros(feature_matrix.shape[1])
+# global_theta_0 = 0.
+# global_random = np.random.permutation(200)
+#
+#
+# # define the update function
+# def update(frame, point, line, feature_matrix, labels):
+#
+#     # declare global parameters
+#     global global_theta
+#     global global_theta_0
+#     global global_random
+#
+#     # init values
+#     legend_text.set_text("frame: {:d}\ntheta: [{:.2f}, {:.2f}]\ntheta_0: {:.2f}"
+#                          .format(frame, global_theta[0], global_theta[1], global_theta_0))
+#
+#     # workaround for several T iterations
+#     if frame < 200:
+#         i = frame
+#     elif frame >= 200 and frame < 400:
+#         i = frame - 200
+#     elif frame >= 400 and frame < 600:
+#         i = frame - 400
+#
+#     # Check if the current frame number exceeds the stopping point
+#     if frame >= 199:
+#         # Stop the animation
+#         ani.event_source.stop()
+#
+#     # update the y-data of the line plot
+#     # theta, theta_0 = p1.perceptron(feature_matrix, labels, 1)
+#     theta, theta_0 = p1.perceptron_single_step_update(feature_matrix[global_random[i]],
+#                                                       labels[global_random[i]],
+#                                                       global_theta,
+#                                                       global_theta_0)
+#
+#     # update global parameters
+#     global_theta = theta
+#     global_theta_0 = theta_0
+#
+#     point.set_offsets(feature_matrix[i])
+#     line.set_ydata((-theta[0]*x - theta_0)/theta[1])
+#     # legend_text.set_text("frame: {:d}\ntheta: [{:.2f}, {:.2f}]\ntheta_0: {:.2f}"
+#     #                      .format(frame, theta[0], theta[1], theta_0))
+#     return point, line, legend_text
+#
+#
+# # create the animation
+# ani = FuncAnimation(fig, update,
+#                     fargs=(point, line, feature_matrix, labels),
+#                     frames=n, blit=True, interval=50)
+#
+# ani.save('animation.gif', writer='pillow')
+#
+# fig.subplots_adjust(top=0.85)
+# plt.show()
 
 #-------------------------------------------------------------------------------
 # Data loading. There is no need to edit code in this section.
