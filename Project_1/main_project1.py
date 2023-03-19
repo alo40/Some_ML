@@ -389,7 +389,7 @@ print("{} {:.4f}".format("Validation accuracy for Pegasos:", avg_peg_val_accurac
 # peg_tune_results_L = utils.tune_pegasos_L(fix_T, Ls, *data)
 # print('Pegasos valid: tune L', list(zip(Ls, peg_tune_results_L[1])))
 # print('best = {:.4f}, L={:.4f}'.format(np.max(peg_tune_results_L[1]), Ls[np.argmax(peg_tune_results_L[1])]))
-#
+
 # utils.plot_tune_results('Perceptron', 'T', Ts, *pct_tune_results)
 # utils.plot_tune_results('Avg Perceptron', 'T', Ts, *avg_pct_tune_results)
 # utils.plot_tune_results('Pegasos', 'T', Ts, *peg_tune_results_T)
@@ -402,7 +402,17 @@ print("{} {:.4f}".format("Validation accuracy for Pegasos:", avg_peg_val_accurac
 # test_bow_features and test_labels.
 #-------------------------------------------------------------------------------
 
-# Your code here
+test_train_accuracy, test_val_accuracy = p1.classifier_accuracy(
+    p1.pegasos,
+    train_bow_features,
+    test_bow_features,
+    train_labels,
+    test_labels,
+    T=25,
+    L=0.01)
+
+print("{} {:.4f}".format("Training accuracy for Pegasos using best Hyperparameters:", test_train_accuracy))
+print("{} {:.4f}".format("Validation accuracy for Pegasos using best Hyperparameters", test_val_accuracy))
 
 #-------------------------------------------------------------------------------
 # Assign to best_theta, the weights (and not the bias!) learned by your most
