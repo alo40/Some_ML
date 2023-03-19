@@ -275,12 +275,12 @@ def pegasos(feature_matrix, labels, T, L):
 # ==============================================================================
 
 
-##  #pragma: coderesponse answer
-##  def decision_function(feature_vector, theta, theta_0):
-##      return np.dot(theta, feature_vector) + theta_0
-##  def classify_vector(feature_vector, theta, theta_0):
-##      return 2*np.heaviside(decision_function(feature_vector, theta, theta_0), 0)-1
-##  #pragma: coderesponse end
+ # #pragma: coderesponse answer
+ # def decision_function(feature_vector, theta, theta_0):
+ #     return np.dot(theta, feature_vector) + theta_0
+ # def classify_vector(feature_vector, theta, theta_0):
+ #     return 2*np.heaviside(decision_function(feature_vector, theta, theta_0), 0)-1
+ # #pragma: coderesponse end
 
 
 def classify(feature_matrix, theta, theta_0):
@@ -300,8 +300,13 @@ def classify(feature_matrix, theta, theta_0):
         given theta and theta_0. If a prediction is GREATER THAN zero, it
         should be considered a positive classification.
     """
-    # Your code here
-    raise NotImplementedError
+    labels = np.zeros(feature_matrix.shape[0])
+    for i in range(feature_matrix.shape[0]):
+        if (np.dot(theta, feature_matrix[i]) + theta_0) > 0:
+            labels[i] = 1
+        else:
+            labels[i] = -1
+    return labels
 
 
 def classifier_accuracy(
@@ -337,8 +342,27 @@ def classifier_accuracy(
         trained classifier on the training data and the second element is the
         accuracy of the trained classifier on the validation data.
     """
-    # Your code here
-    raise NotImplementedError
+
+    # train the classifier
+    theta, theta_0 = classifier(train_feature_matrix, train_labels, **kwargs)  # before kwargs["T"]
+
+    # prediction labels
+    train_predictions = classify(train_feature_matrix, theta, theta_0)
+    val_predictions = classify(val_feature_matrix, theta, theta_0)
+
+    # check accuracy
+    train_accuracy = accuracy(train_predictions, train_labels)
+    val_accuracy = accuracy(val_predictions, val_labels)
+
+    return train_accuracy, val_accuracy
+
+
+def accuracy(preds, targets):
+    """
+    Given length-N vectors containing predicted and target labels,
+    returns the fraction of predictions that are correct.
+    """
+    return (preds == targets).mean()
 
 
 def extract_words(text):
@@ -355,7 +379,7 @@ def extract_words(text):
     return text.lower().split()
 
 
-def bag_of_words(texts, remove_stopword=False):
+def bag_of_words(texts): #, remove_stopword):  #will be used later
     """
     NOTE: feel free to change this code as guided by Section 3 (e.g. remove
     stopwords, add bigrams etc.)
@@ -366,15 +390,15 @@ def bag_of_words(texts, remove_stopword=False):
         a dictionary that maps each word appearing in `texts` to a unique
         integer `index`.
     """
-    # Your code here
-    raise NotImplementedError
+    # # Your code here
+    # raise NotImplementedError
 
     indices_by_word = {}  # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
         for word in word_list:
             if word in indices_by_word: continue
-            if word in stopword: continue
+            #if word in remove_stopword: continue  # will be used later
             indices_by_word[word] = len(indices_by_word)
 
     return indices_by_word
@@ -390,8 +414,8 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
         matrix thus has shape (n, m), where n counts reviews and m counts words
         in the dictionary.
     """
-    # Your code here
-    raise NotImplementedErrort
+    # # Your code here
+    # raise NotImplementedError
 
     feature_matrix = np.zeros([len(reviews), len(indices_by_word)], dtype=np.float64)
     for i, text in enumerate(reviews):
@@ -399,15 +423,7 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
         for word in word_list:
             if word not in indices_by_word: continue
             feature_matrix[i, indices_by_word[word]] += 1
+            #feature_matrix[i, indices_by_word[word]] = 1  # changed to pass accuracy in section 7
     if binarize:
-        # Your code here
-        raise NotImplementedErrort
+        feature_matrix = (feature_matrix > 0).astype(int)
     return feature_matrix
-
-
-def accuracy(preds, targets):
-    """
-    Given length-N vectors containing predicted and target labels,
-    returns the fraction of predictions that are correct.
-    """
-    return (preds == targets).mean()

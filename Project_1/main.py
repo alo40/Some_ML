@@ -1,4 +1,5 @@
 import project1 as p1
+import test as ts
 import utils
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,27 +52,27 @@ import random
 # random data
 #-------------------------------------------------------------------------------
 
-n = 200  # need to be an even number
-sigma = 0.75
-
-# feature_matrix = np.random.rand(n,2)
-feature_matrix_pos_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
-feature_matrix_neg_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
-feature_matrix_x = np.concatenate((feature_matrix_pos_x, feature_matrix_neg_x))
-
-feature_matrix_pos_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
-feature_matrix_neg_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
-feature_matrix_y = np.concatenate((feature_matrix_pos_y, feature_matrix_neg_y))
-
-feature_matrix = np.concatenate((
-    feature_matrix_x.reshape(-1, 1),
-    feature_matrix_y.reshape(-1, 1)),
-    axis=1)  # column-wise concatenation
-
-#labels
-labels_pos = np.sign(np.random.normal(+0.5, 0.1, size=int(n/2)))  # skewed to negative
-labels_neg = np.sign(np.random.normal(-0.5, 0.1, size=int(n/2)))  # skewed to positive
-labels = np.concatenate((labels_pos, labels_neg))
+# n = 200  # need to be an even number
+# sigma = 0.75
+#
+# # feature_matrix = np.random.rand(n,2)
+# feature_matrix_pos_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_neg_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_x = np.concatenate((feature_matrix_pos_x, feature_matrix_neg_x))
+#
+# feature_matrix_pos_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_neg_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_y = np.concatenate((feature_matrix_pos_y, feature_matrix_neg_y))
+#
+# feature_matrix = np.concatenate((
+#     feature_matrix_x.reshape(-1, 1),
+#     feature_matrix_y.reshape(-1, 1)),
+#     axis=1)  # column-wise concatenation
+#
+# #labels
+# labels_pos = np.sign(np.random.normal(+0.5, 0.1, size=int(n/2)))  # skewed to negative
+# labels_neg = np.sign(np.random.normal(-0.5, 0.1, size=int(n/2)))  # skewed to positive
+# labels = np.concatenate((labels_pos, labels_neg))
 
 #-------------------------------------------------------------------------------
 # 3. Full Perceptron Algorithm
@@ -108,8 +109,8 @@ labels = np.concatenate((labels_pos, labels_neg))
 # theta = np.array([[1., -1.], [-1., 1.]])
 # theta_0 = np.array([1., 1.])
 
-T = 100
-L = 1
+# T = 100
+# L = 1
 # eta = 1
 # current_theta = np.zeros(feature_matrix.shape)
 # current_theta_0 = 0.
@@ -124,36 +125,36 @@ L = 1
 #         current_theta[i],
 #         current_theta_0)
 
-# Pegasos full
-theta, theta_0 = p1.pegasos(feature_matrix, labels, T, L)
+# # Pegasos full
+# theta, theta_0 = p1.pegasos(feature_matrix, labels, T, L)
 
 #-------------------------------------------------------------------------------
 # plotting (only for 2 Parameters!)
 #-------------------------------------------------------------------------------
 
-# figure
-fig, ax = plt.subplots()
-
-# 2D points
-for i in range(labels.size):
-    if labels[i] > 0:
-        ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='b', s=4)
-    else:
-        ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='r', s=4)
-
-# linear 2D classifier
-x = np.linspace(-4, 4, 100)
-y = (-theta[0]*x - theta_0)/theta[1]
-ax.plot(x, y, c='m', lw=0.4)
-
-# config and plot figure
-lim_x = 2
-lim_y = 2
-ax.set(xlabel='x_1', ylabel='x_2')
-ax.set(xlim=(-lim_x, lim_x), ylim=(-lim_y, lim_y))
-ax.grid(linestyle='--')
-ax.set_aspect('equal', 'box')
-plt.show()
+# # figure
+# fig, ax = plt.subplots()
+#
+# # 2D points
+# for i in range(labels.size):
+#     if labels[i] > 0:
+#         ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='b', s=4)
+#     else:
+#         ax.scatter(feature_matrix[i, 0], feature_matrix[i, 1], c='r', s=4)
+#
+# # linear 2D classifier
+# x = np.linspace(-4, 4, 100)
+# y = (-theta[0]*x - theta_0)/theta[1]
+# ax.plot(x, y, c='m', lw=0.4)
+#
+# # config and plot figure
+# lim_x = 2
+# lim_y = 2
+# ax.set(xlabel='x_1', ylabel='x_2')
+# ax.set(xlim=(-lim_x, lim_x), ylim=(-lim_y, lim_y))
+# ax.grid(linestyle='--')
+# ax.set_aspect('equal', 'box')
+# plt.show()
 
 #-------------------------------------------------------------------------------
 # animation (optional)
@@ -229,24 +230,6 @@ plt.show()
 # plt.show()
 
 #-------------------------------------------------------------------------------
-# Data loading. There is no need to edit code in this section.
-#-------------------------------------------------------------------------------
-
-# train_data = utils.load_data('reviews_train.tsv')
-# val_data = utils.load_data('reviews_val.tsv')
-# test_data = utils.load_data('reviews_test.tsv')
-#
-# train_texts, train_labels = zip(*((sample['text'], sample['sentiment']) for sample in train_data))
-# val_texts, val_labels = zip(*((sample['text'], sample['sentiment']) for sample in val_data))
-# test_texts, test_labels = zip(*((sample['text'], sample['sentiment']) for sample in test_data))
-
-# dictionary = p1.bag_of_words(train_texts)
-
-# train_bow_features = p1.extract_bow_feature_vectors(train_texts, dictionary)
-# val_bow_features = p1.extract_bow_feature_vectors(val_texts, dictionary)
-# test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
-
-#-------------------------------------------------------------------------------
 # Problem 5
 #-------------------------------------------------------------------------------
 
@@ -255,14 +238,35 @@ plt.show()
 # T = 10
 # L = 0.2
 #
-# thetas_perceptron = p1.perceptron(toy_features, toy_labels, T)
-# thetas_avg_perceptron = p1.average_perceptron(toy_features, toy_labels, T)
-# thetas_pegasos = p1.pegasos(toy_features, toy_labels, T, L)
+# x = np.linspace(0, 1, T)
+# y1 = np.zeros(T)
+# y2 = np.zeros(T)
+# y3 = np.zeros(T)
 #
+# for i in range(1, T):
+#     thetas_perceptron = p1.perceptron(toy_features, toy_labels, i)
+#     thetas_avg_perceptron = p1.average_perceptron(toy_features, toy_labels, i)
+#     thetas_pegasos = p1.pegasos(toy_features, toy_labels, i, L)
+#
+#     y1[i] = thetas_perceptron[0][0]
+#     y2[i] = thetas_avg_perceptron[0][0]
+#     y3[i] = thetas_pegasos[0][0]
+#
+# # plot the curves with different colors and labels
+# plt.plot(x, y1, color='blue', label='thetas_perceptron')
+# plt.plot(x, y2, color='green', label='thetas_avg_perceptron')
+# plt.plot(x, y3, color='red', label='thetas_pegasos')
+#
+# # add a legend
+# plt.legend()
+#
+# # show the plot
+# plt.show()
+
 # def plot_toy_results(algo_name, thetas):
 #     print('theta for', algo_name, 'is', ', '.join(map(str,list(thetas[0]))))
 #     print('theta_0 for', algo_name, 'is', str(thetas[1]))
-#     utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
+#     # utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
 #
 # plot_toy_results('Perceptron', thetas_perceptron)
 # plot_toy_results('Average Perceptron', thetas_avg_perceptron)
@@ -272,23 +276,90 @@ plt.show()
 # Problem 7
 #-------------------------------------------------------------------------------
 
-# T = 10
-# L = 0.01
+# n = 200  # need to be an even number
+# sigma = 0.75
 #
-# pct_train_accuracy, pct_val_accuracy = \
-#    p1.classifier_accuracy(p1.perceptron, train_bow_features,val_bow_features,train_labels,val_labels,T=T)
-# print("{:35} {:.4f}".format("Training accuracy for perceptron:", pct_train_accuracy))
-# print("{:35} {:.4f}".format("Validation accuracy for perceptron:", pct_val_accuracy))
+# # feature_matrix = np.random.rand(n,2)
+# feature_matrix_pos_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_neg_x = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_x = np.concatenate((feature_matrix_pos_x, feature_matrix_neg_x))
 #
-# avg_pct_train_accuracy, avg_pct_val_accuracy = \
-#    p1.classifier_accuracy(p1.average_perceptron, train_bow_features,val_bow_features,train_labels,val_labels,T=T)
-# print("{:43} {:.4f}".format("Training accuracy for average perceptron:", avg_pct_train_accuracy))
-# print("{:43} {:.4f}".format("Validation accuracy for average perceptron:", avg_pct_val_accuracy))
+# feature_matrix_pos_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_neg_y = np.random.normal(random.uniform(-1.0, 1.0), sigma, size=int(n/2))
+# feature_matrix_y = np.concatenate((feature_matrix_pos_y, feature_matrix_neg_y))
 #
-# avg_peg_train_accuracy, avg_peg_val_accuracy = \
-#    p1.classifier_accuracy(p1.pegasos, train_bow_features,val_bow_features,train_labels,val_labels,T=T,L=L)
-# print("{:50} {:.4f}".format("Training accuracy for Pegasos:", avg_peg_train_accuracy))
-# print("{:50} {:.4f}".format("Validation accuracy for Pegasos:", avg_peg_val_accuracy))
+# feature_matrix = np.concatenate((
+#     feature_matrix_x.reshape(-1, 1),
+#     feature_matrix_y.reshape(-1, 1)),
+#     axis=1)  # column-wise concatenation
+
+# feature_matrix = np.array(
+#     [[ 1. ,  1. , 1, 1, 1],
+#      [-1.5, -0.5, 1, 1, 1],
+#      [-1.5, -0.5, 1, 1, 1],
+#      [-1.5, -0.5, 1, 1, 1],
+#      [-1.5, -0.5, 1, 1, 1]])
+# theta = np.array([1., -1., 1., -1., 1.])
+# theta_0 = 0.
+#
+# labels = p1.classify(feature_matrix, theta, theta_0)
+
+#-------------------------------------------------------------------------------
+# Data loading. There is no need to edit code in this section.
+#-------------------------------------------------------------------------------
+
+train_data = utils.load_data('reviews_train.tsv')
+val_data = utils.load_data('reviews_val.tsv')
+test_data = utils.load_data('reviews_test.tsv')
+
+train_texts, train_labels = zip(*((sample['text'], sample['sentiment']) for sample in train_data))
+val_texts, val_labels = zip(*((sample['text'], sample['sentiment']) for sample in val_data))
+test_texts, test_labels = zip(*((sample['text'], sample['sentiment']) for sample in test_data))
+
+# my_test_dict = p1.bag_of_words(train_texts[1], 'the')  # output is letter by letter as train_texts[1] is str
+my_test_dict = p1.bag_of_words(train_texts[:1])  # output is word by word as train_texts[1] is tuple
+dictionary = p1.bag_of_words(train_texts)
+
+train_bow_features = p1.extract_bow_feature_vectors(train_texts, dictionary)
+val_bow_features = p1.extract_bow_feature_vectors(val_texts, dictionary)
+test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
+
+T = 10
+L = 0.01
+
+# using Perceptron algorithm
+pct_train_accuracy, pct_val_accuracy = p1.classifier_accuracy(
+    p1.perceptron,
+    train_bow_features,
+    val_bow_features,
+    train_labels,
+    val_labels,
+    T=T)
+print("{} {:.4f}".format("Training accuracy for perceptron:", pct_train_accuracy))
+print("{} {:.4f}".format("Validation accuracy for perceptron:", pct_val_accuracy))
+
+# using Average Perceptron algorithm
+avg_pct_train_accuracy, avg_pct_val_accuracy = p1.classifier_accuracy(
+    p1.average_perceptron,
+    train_bow_features,
+    val_bow_features,
+    train_labels,
+    val_labels,
+    T=T)
+print("{} {:.4f}".format("Training accuracy for average perceptron:", avg_pct_train_accuracy))
+print("{} {:.4f}".format("Validation accuracy for average perceptron:", avg_pct_val_accuracy))
+
+# using Pegasos algorithm
+avg_peg_train_accuracy, avg_peg_val_accuracy = p1.classifier_accuracy(
+    p1.pegasos,
+    train_bow_features,
+    val_bow_features,
+    train_labels,
+    val_labels,
+    T=T,
+    L=L)
+print("{} {:.4f}".format("Training accuracy for Pegasos:", avg_peg_train_accuracy))
+print("{} {:.4f}".format("Validation accuracy for Pegasos:", avg_peg_val_accuracy))
 
 #-------------------------------------------------------------------------------
 # Problem 8
