@@ -379,7 +379,7 @@ def extract_words(text):
     return text.lower().split()
 
 
-def bag_of_words(texts): #, remove_stopword):  #will be used later
+def bag_of_words(texts, stopwords, remove_stopword=False):  #will be used later
     """
     NOTE: feel free to change this code as guided by Section 3 (e.g. remove
     stopwords, add bigrams etc.)
@@ -398,13 +398,14 @@ def bag_of_words(texts): #, remove_stopword):  #will be used later
         word_list = extract_words(text)
         for word in word_list:
             if word in indices_by_word: continue
-            #if word in remove_stopword: continue  # will be used later
+            if remove_stopword == True:
+                if word in stopwords: continue  # will be used later
             indices_by_word[word] = len(indices_by_word)
 
     return indices_by_word
 
 
-def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
+def extract_bow_feature_vectors(reviews, indices_by_word, binarize=False):
     """
     Args:
         `reviews` - a list of natural language strings
@@ -427,3 +428,53 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
     if binarize:
         feature_matrix = (feature_matrix > 0).astype(int)
     return feature_matrix
+
+
+################################## TESTING ##########################################################################
+
+def classifier_accuracy_return_theta(
+        classifier,
+        train_feature_matrix,
+        val_feature_matrix,
+        train_labels,
+        val_labels,
+        **kwargs):
+    """
+    Trains a linear classifier and computes accuracy.  The classifier is
+    trained on the train data.  The classifier's accuracy on the train and
+    validation data is then returned.
+
+    Args:
+        `classifier` - A learning function that takes arguments
+            (feature matrix, labels, **kwargs) and returns (theta, theta_0)
+        `train_feature_matrix` - A numpy matrix describing the training
+            data. Each row represents a single data point.
+        `val_feature_matrix` - A numpy matrix describing the validation
+            data. Each row represents a single data point.
+        `train_labels` - A numpy array where the kth element of the array
+            is the correct classification of the kth row of the training
+            feature matrix.
+        `val_labels` - A numpy array where the kth element of the array
+            is the correct classification of the kth row of the validation
+            feature matrix.
+        `kwargs` - Additional named arguments to pass to the classifier
+            (e.g. T or L)
+
+    Returns:
+        a tuple in which the first element is the (scalar) accuracy of the
+        trained classifier on the training data and the second element is the
+        accuracy of the trained classifier on the validation data.
+    """
+
+    # train the classifier
+    theta, theta_0 = classifier(train_feature_matrix, train_labels, **kwargs)  # before kwargs["T"]
+
+    # prediction labels
+    train_predictions = classify(train_feature_matrix, theta, theta_0)
+    val_predictions = classify(val_feature_matrix, theta, theta_0)
+
+    # check accuracy
+    train_accuracy = accuracy(train_predictions, train_labels)
+    val_accuracy = accuracy(val_predictions, val_labels)
+
+    return train_accuracy, val_accuracy, theta
