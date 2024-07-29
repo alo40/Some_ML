@@ -1,0 +1,13 @@
+# Ignore everything
+*
+
+# But not these files...
+# !.gitignore
+!*.py
+
+# Additionally, allow directories (necessary to track .py files within directories)
+!*/
+
+# Ignore other files that you don't want to push
+# For example, ignore compiled Python files
+*.pyc
