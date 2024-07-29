@@ -1,10 +1,6 @@
 import project1 as p1
-import test as ts
 import utils
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-import random
 
 #-------------------------------------------------------------------------------
 # 2. Hinge Loss on One Data Sample
