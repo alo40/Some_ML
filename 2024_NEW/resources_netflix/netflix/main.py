@@ -130,8 +130,8 @@ from matplotlib import cm
 
 # Test 2 data
 # ------------------------------------
-# X = np.loadtxt("test_incomplete.txt")
-X = np.loadtxt("test_complete.txt")
+X = np.loadtxt("test_incomplete.txt")
+# X = np.loadtxt("test_complete.txt")
 K = 4
 seed = 0
 mixture, posterior = common.init(X, K, seed)
