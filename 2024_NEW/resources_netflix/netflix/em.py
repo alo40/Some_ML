@@ -27,28 +27,58 @@ def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
     mean = mixture.mu
     cova = [var * np.identity(d) for var in mixture.var]
     posterior = np.zeros((n, K))
+    posterior_numerical = np.zeros((n, K))
     multi_pdf = np.zeros((n, K))
     likelihood = np.zeros(n)
+    log_likelihood_numerical = np.zeros(n)
+    log_likelihood_Cu = np.zeros(n)
+    log_likelihood_complete = np.zeros(n)
 
     # E-Step
     # ---------------------------------------------------
     # Calculate likelihood
     for i, x_i in enumerate(X):
         for j in range(K):
+            # non-zero entries
             Cu = np.where(x_i != 0)[0]
+            mean_cu = mean[j][Cu]
             cova_cu = np.diag(cova[j])[Cu] * np.identity(len(Cu))
+
+            # multi gaussian
             norm_term = 1 / np.sqrt(np.linalg.det(cova_cu) * (2 * np.pi) ** d)
-            expo_term = np.exp(-0.5 * (x_i[Cu] - mean[j][Cu]).T @ np.linalg.inv(cova_cu) @ (x_i[Cu] - mean[j][Cu]))
+            expo_term = np.exp(-0.5 * (x_i[Cu] - mean_cu).T @ np.linalg.inv(cova_cu) @ (x_i[Cu] - mean_cu))
             multi_pdf[i, j] = norm_term * expo_term
-            likelihood[i] += weight[j] * multi_pdf[i, j]  # sum over all K gaussian mixtures
-    joint_log_likelihood = np.sum(np.log(likelihood))
+
+            # likelihood using Cu from multi gaussian (sum over all K gaussian mixtures)
+            likelihood[i] += weight[j] * multi_pdf[i, j]
+
+            # # log-likelihood for numerical instabilities (wrong! log(x+y) != logx + logy)
+            # log_likelihood_numerical[i] += np.log(weight[j] + 1e-16) + np.log(multi_pdf[i, j])
+
+            # # log-likelihood using Cu
+            # log_likelihood_Cu[i] = -0.5 * (np.log(np.linalg.det(cova_cu)) + (x_i[Cu] - mean_cu).T @ np.linalg.inv(cova_cu) @ (x_i[Cu] - mean_cu) + d * np.log(2 * np.pi))
+            #
+            # # log-likelihood complete
+            # log_likelihood_complete[i] = -0.5 * (np.log(np.linalg.det(cova[j])) + (x_i - mean[j]).T @ np.linalg.inv(cova[j]) @ (x_i - mean[j]) + d * np.log(2 * np.pi))
 
     # Calculate posteriors
     for j in range(K):
         for i, x_i in enumerate(X):
+            # not considering numerical underflow
             posterior[i, j] = weight[j] * multi_pdf[i, j] / likelihood[i]
 
-    return posterior, joint_log_likelihood
+            # to avoid numerical underflow
+            log_posterior = np.log(weight[j]) + np.log(multi_pdf[i, j]) - np.log(likelihood[i])
+            posterior_numerical[i, j] = np.exp(log_posterior)
+
+    # Calculate joint log likelihood
+    joint_log_likelihood_test = np.log(np.prod(likelihood))
+    joint_log_likelihood = np.sum(np.log(likelihood))
+    # joint_log_likelihood_1 = np.sum(log_likelihood_Cu)
+    # joint_log_likelihood_2 = np.sum(log_likelihood_complete)
+    # joint_log_likelihood_4 = np.sum(log_likelihood_numerical)
+
+    return posterior_numerical, joint_log_likelihood
 
 
 
