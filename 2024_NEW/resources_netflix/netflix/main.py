@@ -69,7 +69,7 @@ from matplotlib import cm
 
 # 7. --------------------------------------------------------------------
 
-
+# # ------------------------------------
 # # Test 1 data
 # # ------------------------------------
 # X = np.array(
@@ -124,27 +124,50 @@ from matplotlib import cm
 # print(f"likelihood comparison: {[joint_log_likelihood == expected_joint_LL]}")
 # pass
 
+# # ------------------------------------
+# # Test 2 data
+# # ------------------------------------
+# X = np.loadtxt("test_incomplete.txt")
+# # X = np.loadtxt("test_complete.txt")
+# K = 4
+# seed = 0
+# mixture, posterior = common.init(X, K, seed)
+#
+# # Test 2
+# # ------------------------------------
+# # posterior, joint_log_likelihood = em.estep(X, mixture)
+# # mixture = em.mstep(X, posterior, mixture, min_var = .25)
+# mixture, posterior, joint_log_likelihood = em.run(X, mixture, posterior)
 
-# ------------------------------------------------------------------------------------------------
+# 8. --------------------------------------------------------------------
 
+# X = np.loadtxt("toy_data.txt")  # for testing only
+X = np.loadtxt("test_incomplete.txt")  # for testing only
+# X = np.loadtxt("netflix_incomplete.txt")
+Ks = [2]
+seeds = [0]
+for K in Ks:
+    print()
+    for seed in seeds:
+        mixture, posterior = common.init(X, K, seed)
+        mixture, posterior, joint_log_likelihood = em.run(X, mixture, posterior)
+        # mixture, posterior, joint_log_likelihood = naive_em.run(X, mixture, posterior)
+        BIC = common.bic(X, mixture, joint_log_likelihood)
+        print(f"K={K}, seed={seed}, LL={joint_log_likelihood}, BIC={BIC}")
 
-# Test 2 data
-# ------------------------------------
-X = np.loadtxt("test_incomplete.txt")
-# X = np.loadtxt("test_complete.txt")
-K = 4
-seed = 0
-mixture, posterior = common.init(X, K, seed)
+X_predicted = em.fill_matrix(X, mixture)
 
-# Test 2
-# ------------------------------------
-posterior_naive, LL_naive = naive_em.estep(X, mixture)
-posterior, LL = em.estep(X, mixture)
-print(f"posterior comparison: {[posterior == posterior_naive]}")
-print(f"likelihood comparison: {[LL == LL_naive]}")
+# plot test
+common.plot(X, mixture, posterior, title='Netflix Problem')
 
+# NOT USED --------------------------------------------------------------
 
-# ------------------------------------------------------------------------------------------------
+# # Test 2 (not used)
+# # ------------------------------------
+# posterior_naive, LL_naive = naive_em.estep(X, mixture)
+# posterior, LL = em.estep(X, mixture)
+# print(f"posterior comparison: {[posterior == posterior_naive]}")
+# print(f"likelihood comparison: {[LL == LL_naive]}")
 
 # # EM update (test, not used)
 # # ------------------------------------
