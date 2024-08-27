@@ -1,3 +1,5 @@
+# This was done on August 2024
+
 import numpy as np
 import kmeans
 import common
